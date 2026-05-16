@@ -13,7 +13,7 @@ Most SEO tools tell you what's wrong with your site. This one writes the pages.
 **New in v1.7.1 -- LLM Retrieval & Substantive Content Protocols:**
 - **Meta-Specific Entity Isolation** -- competitor SERP descriptions are mined for the bolded query-matched terms (the snippet entities Google itself surfaces), not generic body entities. These become the primary entity set the brief must cover, because they are the exact tokens already validated as relevant by Google's snippet generator.
 - **Bigram / Trigram AI Alignment** -- top 3 ranking competitors' body text is tokenized to extract the top 5 bigrams and top 5 trigrams. The AI Summary Nugget (top of page, position zero for LLM retrieval) must include 2 or more of these n-grams verbatim. AI retrieval scoring rewards token-window overlap with consensus phrasing -- this is how you align with what the LLM has already learned the topic "looks like."
-- **Primary + Secondary Intent Mapping (Orcas 1)** -- single-intent pages underperform. Every page now maps Primary intent (the question the user typed) into the first 500 tokens AND Secondary intent (the action funnel: compare, book, contact, calculate) into the next two chunks. Pages without a secondary action path fail the dual-intent check.
+- **Primary + Secondary Intent Mapping (Orcas 1)** -- single-intent pages underperform. Every page now maps Primary intent (the question the user typed) into the opening section (first ~500 words above the fold) AND Secondary intent (the action funnel: compare, book, contact, calculate) into the next two sections. Pages without a secondary action path fail the dual-intent check.
 - **The 410 Prune Protocol** -- on rewrites, every legacy URL gets an explicit status-code recommendation. 301 preserves equity when the topic survives. 410 prunes thin, cannibalizing, or out-of-topical-circle pages so they stop dragging the domain. Silent leave-as-is is no longer an acceptable output for a legacy URL audit.
 - **Local Codebase Contextual Linking** -- when the skill is run inside a project repo, it scans the local file structure (`.tsx`, `.md`, `.html`, etc.), detects the framework, injects semantic HTML directly into source files where appropriate, and emits `.htaccess` / Nginx / `next.config.js` redirect snippets for the 410 recommendations. The skill writes ranking pages, not just content briefs.
 - **45-point quality checklist** -- adds Meta Entity Isolation, N-Gram Alignment, Dual-Intent, and Status Code Governance checks.
@@ -27,17 +27,17 @@ Most SEO tools tell you what's wrong with your site. This one writes the pages.
 
 **New in v1.5.0 -- Forensic SEO + Structural Signals:**
 - **Semantic HTML Containers** -- generated HTML now uses `<article>`, `<section>`, `<aside>`, `<main>` instead of generic `<div>`. Google's crawler uses these elements to identify the Main Content zone for passage extraction and AI retrieval.
-- **Proof-Term Proximity** -- supporting evidence (numbers, entity names, operational details) must live in the same 500-token chunk as the H2 it supports. BERT evaluates within the passage window, not page-wide. Orphaned proof terms don't help.
+- **Proof-Term Proximity** -- supporting evidence (numbers, entity names, operational details) must live in the same H2-bounded section as the heading it supports. BERT evaluates within the passage window, not page-wide. Orphaned proof terms don't help.
 - **QDD Vulnerability Check** -- UGC (Instagram, Pinterest, Reddit) ranking for a commercial keyword is a structural gap, not a signal to avoid. Flag as HIGH_CONFIDENCE_TAKEOVER.
 - **Site Over Page Rule** -- generalist competitors ranking with one page are vulnerable to specialist site architecture. Niche Site Pivot trigger fires when 2/3 top results are generalist pages.
-- **Query Fan-Out (QFO) Facet Coverage** -- each 500-token chunk now targets a specific AI sub-query. 40% of future traffic arrives via AI fan-out from a single user prompt.
+- **Query Fan-Out (QFO) Facet Coverage** -- each self-contained section now targets a specific AI sub-query. 40% of future traffic arrives via AI fan-out from a single user prompt.
 - **Forensic EMQ Check** -- EMQ in H1 is conditionally required when 2/3 top competitors use it. Competitive context overrides the default entity-based heading rule.
 - **Orcas One CVR Modeling** -- keywords now ranked by estimated conversion value, not raw volume. Position 1 at 4.5% CVR vs position 7 at 2%.
 - **45-point quality checklist** with QDD, Site vs. Page, EMQ ratio, and QFO facet checks.
 
 **New in v1.4.0 -- March 2026 Update Protocols:**
 - **NavBoost Geographic Click Relevance** -- pages now reranked by geographic click patterns. Local pages require neighborhood-level specificity, not just city names. Observed across SEO X community testing.
-- **Click Satisfaction as Primary Signal** -- Google watches if users are satisfied after clicking. Content must deliver value in the first 3 chunks or rankings drop regardless of quality. Confirmed via practitioner NavBoost analysis.
+- **Click Satisfaction as Primary Signal** -- Google watches if users are satisfied after clicking. Content must deliver value in the first 3 sections or rankings drop regardless of quality. Confirmed via practitioner NavBoost analysis.
 - **AI Overview Link Optimization** -- earning a link inside AI Overviews drives 70-80% CTR. Pages structured for snippet extraction with clean tables and FAQ markup.
 - **AI Overview Theft Defense** -- rising impressions + falling clicks = your content cited without credit. Interactive elements (calculators, widgets) defend against extraction.
 - **QDD (Query Deserves Diversity)** -- Google pulls diverse results into overviews. Information Gain Test now critical for QDD survival.
@@ -117,7 +117,7 @@ This isn't a wrapper around "write me an SEO article." The skill encodes strateg
 
 **GEO / LLM SEO (Generative Engine Optimization)**
 - 200-char AI Summary Nugget at top of every page, designed for Perplexity/Gemini/ChatGPT to cite as a consensus source
-- 500-token chunk architecture matching Google AI's retrieval window
+- Self-contained section architecture (~500 words per H2-bounded section) so each section functions as a standalone answer for both human scanners and passage-level extraction
 - Content structured for AI citation (Perplexity, ChatGPT, Google AI Overviews)
 - Entity-rich writing that LLMs can extract and reference
 - Depth-over-length philosophy (comprehensive coverage that becomes the authoritative source)
@@ -132,8 +132,8 @@ This isn't a wrapper around "write me an SEO article." The skill encodes strateg
 
 **Structural & DOM Signals**
 - Semantic HTML containers: `<article>`, `<section>`, `<aside>`, `<main>` in generated HTML for Main Content zone identification
-- Proof-term proximity: supporting evidence must live in the same 500-token chunk as its H2 (BERT evaluates within passage window, not page-wide)
-- Query Fan-Out facet coverage: each chunk answers a distinct AI sub-query for multiplicative retrieval
+- Proof-term proximity: supporting evidence must live in the same H2-bounded section as its heading (BERT evaluates within passage window, not page-wide)
+- Query Fan-Out facet coverage: each section answers a distinct AI sub-query for multiplicative retrieval
 - Forensic EMQ check: conditionally require exact-match keyword in H1 based on competitor optimization ratio
 - QDD vulnerability detection: UGC in top 10 = HIGH_CONFIDENCE_TAKEOVER opportunity flag
 - Site-level entity dominance: niche site architecture beats generalist single-page competitors
@@ -161,7 +161,7 @@ This isn't a wrapper around "write me an SEO article." The skill encodes strateg
 - All specific numbers tagged with `{{VERIFY}}`? Check.
 - All citations specific and traceable? Check.
 - "Not For You" block present? Check.
-- 500-token chunk architecture? Check.
+- Each H2-bounded section is a self-contained ~250-500 word answer? Check.
 - No banned phrases or patterns? Check.
 - Word count within competitive range? Check.
 - JSON-LD schema block matching page type? Check.
@@ -183,7 +183,7 @@ This isn't a wrapper around "write me an SEO article." The skill encodes strateg
 - QDD check run -- UGC in top 10 flagged or cleared? Check.
 - Site vs. Page audit -- competitor type identified? Check.
 - Forensic EMQ ratio checked -- applied correctly? Check.
-- Each 500-token chunk targets a distinct QFO facet? Check.
+- Each section targets a distinct QFO facet, with no facet doubled up? Check.
 - ICP defined in brief and content tailored to their pain points? Check.
 - Deep entity history / identity tags included where applicable? Check.
 - No keyword cannibalization with existing site URLs? Check.

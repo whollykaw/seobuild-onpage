@@ -2,7 +2,7 @@
 
 This is **seo-agi** -- a Claude Code skill for Generative Engine Optimization. It writes pages that rank on Google AND get cited by LLMs.
 
-This is not a generic SEO prompt. It enforces 500-token chunk architecture, Reddit Test quality gates, verification tags, "Not For You" blocks, ICP-driven content targeting, and real competitive data from DataForSEO/Ahrefs/SEMRush/GSC.
+This is not a generic SEO prompt. It enforces self-contained section architecture, Reddit Test quality gates, verification tags, "Not For You" blocks, ICP-driven content targeting, and real competitive data from DataForSEO/Ahrefs/SEMRush/GSC.
 
 ## Structure
 
@@ -18,7 +18,7 @@ scripts/
   tributary_gen.py    -- CLI: Generates Tier 1/Tier 2 companion content
                          (Google Sites, Medium, Subreddit, Google Sheets,
                          LinkedIn) topically derived from the money page's
-                         500-token chunk architecture. See SKILL.md
+                         self-contained section architecture. See SKILL.md
                          "Tributary Trust Protocol" for the strategy.
   setup.py            -- Interactive first-run config
   lib/
@@ -38,7 +38,7 @@ tests/                -- Unit tests
 The SKILL.md is the living document. It contains:
 - Core belief system (anti-generic, LLM retrieval, entity consensus)
 - Google AI Search 7 ranking signals
-- 500-token chunk architecture
+- Self-contained section architecture (~500 words per H2-bounded section; framing rationale in SKILL.md §3)
 - SEAT signals (Semantic + E-E-A-T + Entity/Knowledge Graph)
 - Quality gates: Reddit Test, Prove-It Details, Not For You, Information Gain Test
 - ICP (Ideal Customer Persona) requirement in every page brief

@@ -3,7 +3,7 @@ name: seobuild-onpage
 version: 1.7.1
 description: >
   Write SEO pages that rank on Google AND get cited by LLMs. Uses live SERP data,
-  500-token chunk architecture, and the Reddit Test quality gate.
+  self-contained section architecture, and the Reddit Test quality gate.
   Triggers on: "write an SEO page", "seo-agi", "seo page for [keyword]",
   "rank for [keyword]", "rewrite this page for SEO", "GEO", "AEO",
   "write a page that ranks".
@@ -166,18 +166,20 @@ Every piece of content is scored against these seven signals in Google's AI pipe
 
 ---
 
-## 3. THE 500-TOKEN CHUNK ARCHITECTURE
+## 3. SELF-CONTAINED SECTION ARCHITECTURE
 
-Google's AI retrieves content in ~500-token (~375 word) chunks. LLMs chunk at ~600 words with ~300 word overlap. Structure every page to feed this pipeline perfectly.
+> **A note on framing.** Earlier versions of this skill described content as needing to be split into "500-token chunks" because that's how RAG retrieval works. Google's [official AI optimization guide](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) explicitly calls "chunking content into tiny pieces" a myth — Google says multi-topic pages are fine and that AI eligibility is the same as standard snippet eligibility. The guidance below is still good practice — *not because Google's retriever demands a token count*, but because every H2-bounded section should function as a self-contained answer for both human scanners and passage-level extraction (which all RAG systems do, regardless of exact chunk size). Treat the ~500-word target as internal scaffolding for authoring consistency, not as a Google requirement.
 
-### Chunk Rules:
+Each H2-bounded section should be a self-contained answer to a specific question. Aim for ~250–500 words of substantive content per section. Don't optimize the token count — optimize that the section stands alone.
+
+### Section Rules:
 - **Question-Based H2s:** Every H2 must match a real search query or a "Query Fan-Out" question (the logical follow-up an AI will suggest). Use PAA data from research to inform these.
 - **Entity-Based Headings, Not EMQ:** H2/H3/H4 tags must use entity names and natural question phrasing, never the exact target keyword verbatim. Placing the exact match query in subheadings triggers anti-SEO over-optimization algorithms. Use the main entities of the topic instead (e.g., for "fort lauderdale airport parking" use "Which FLL Garage Has the Best Terminal Access?" not "Fort Lauderdale Airport Parking Garages").
 - **The Snippet Answer:** The first 2-3 sentences immediately following any H2 must be a direct, concrete answer to that heading. No preamble. No definitions.
-- **The Contrast Statement:** Within the chunk, include explicit X vs. Y comparisons with numbers (e.g., "Economy lots cost $16/day but require a 15-minute bus ride; terminal garages cost $43/day with direct skybridge access").
-- **Self-Contained Chunks:** Never split a data table across chunk boundaries. Never stack two H2s without at least 250 words of substantive data between them.
-- **Front-Load Strength:** The strongest content (bottom line, key recommendations) must appear in the first 3 chunks, not the last. AI retrieval may never reach buried material.
-- **Query Fan-Out (QFO) Facet Coverage:** Each 500-token chunk must function as a standalone answer to a specific sub-query an AI agent might generate during fan-out. 40% of future AI-mediated traffic arrives via query fan-out -- AI breaking one user prompt into dozens of sub-queries. Design each chunk with a mental "facet label": this chunk answers "What does it cost?", this chunk answers "How far is the shuttle?", this chunk answers "When does it fill up?" Never combine two facets into one chunk. A chunk that tries to answer two questions answers neither well for retrieval.
+- **The Contrast Statement:** Within the section, include explicit X vs. Y comparisons with numbers (e.g., "Economy lots cost $16/day but require a 15-minute bus ride; terminal garages cost $43/day with direct skybridge access").
+- **Self-Contained Sections:** Never split a data table across section boundaries. Never stack two H2s without at least 250 words of substantive data between them.
+- **Front-Load Strength:** The strongest content (bottom line, key recommendations) must appear in the first 3 sections, not the last. Retrieval and human readers both bail before reaching buried material.
+- **Query Fan-Out (QFO) Facet Coverage:** Each section must function as a standalone answer to a specific sub-query an AI agent might generate during fan-out. Roughly 40% of AI-mediated traffic arrives via query fan-out -- AI breaking one user prompt into dozens of sub-queries. Design each section with a mental "facet label": this section answers "What does it cost?", this section answers "How far is the shuttle?", this section answers "When does it fill up?" Never combine two facets into one section. A section that tries to answer two questions answers neither well for retrieval.
 
 ---
 
@@ -256,7 +258,7 @@ If the top 10 results for a keyword include UGC platforms (Instagram, Pinterest,
 When generating HTML output, wrap the main article body in `<article>`, each logical section in `<section>`, and supplementary blocks (Not For You, callouts, sidebar context) in `<aside>`. Use `<main>` for the primary content area. Do not use `<div>` for content regions that have a semantic equivalent. Google's crawler uses these elements to identify the Main Content zone for passage ranking and AI extraction. A page built with semantic containers gives the crawler explicit signals about which content to weight highest.
 
 ### Proof-Term Proximity
-The specific numbers, entity names, and operational details that support a claim must appear in the same 500-token chunk as the H2 they support -- not separated by other sections. A proof term three sections away from its heading does not strengthen that heading's embedding signal. BERT and Neural Matching evaluate relevance within the passage window, not page-wide. If the supporting evidence for a claim cannot fit in the same chunk, split the topic into two headings, each with its own evidence block. Never orphan a proof term from its context heading.
+The specific numbers, entity names, and operational details that support a claim must appear in the same H2-bounded section as the heading they support -- not separated by other sections. A proof term three sections away from its heading does not strengthen that heading's embedding signal. BERT and Neural Matching evaluate relevance within the passage window, not page-wide. If the supporting evidence for a claim cannot fit in the same section, split the topic into two headings, each with its own evidence block. Never orphan a proof term from its context heading.
 
 ### The RDFa Hack
 LLMs often ignore JSON-LD in the header. Embed semantic data directly inline using RDFa or Microdata (`<span>` tags). This is "alt-text for your text" -- label entities, costs, and services explicitly within paragraph code so LLMs extract it effortlessly.
@@ -471,7 +473,7 @@ Google and AI agents now cross-check third-party signals before trusting your ow
 Skipping step 1 is the most common reason a legitimate local business struggles to rank despite having a clean, well-structured site.
 
 ### Entity Consensus Generation:
-When prompted for broader strategy, output variations of core 500-token chunks formatted for cross-posting on LinkedIn, Medium, Reddit, and Vocal Media to build brand authority where LLMs scrape.
+When prompted for broader strategy, output variations of the core self-contained sections — the ones that already function as standalone answers on the page — formatted for cross-posting on LinkedIn, Medium, Reddit, and Vocal Media to build brand authority where LLMs scrape.
 
 ### Reddit — Subdomains Over Standard Posts
 Reddit is pulled into AI Overviews and conversational search results at high frequency, but standard `www.reddit.com` posts are often flagged as spam before indexing. Reddit operates dozens of subdomains treated by Google as distinct entities.
@@ -479,12 +481,12 @@ Reddit is pulled into AI Overviews and conversational search results at high fre
 **Tactical note:** When seeding Reddit for entity consensus, explore indexed subdomain entry points beyond the standard www. Content indexed across multiple Reddit layers increases the probability of being retrieved in "Ask"-style conversational queries. Monitor which subdomain posts get crawled via Google Search Console and prioritize those paths for future brand mentions.
 
 ### RAG Targeting — Write for AI Retrieval, Not Keyword Volume
-Modern AI search agents (Gemini, ChatGPT, Perplexity) use Retrieval-Augmented Generation (RAG): they pull the most authoritative chunk available and surface it as the answer. This means zero-volume long-tail queries matter.
+Modern AI search agents (Gemini, ChatGPT, Perplexity) use Retrieval-Augmented Generation (RAG): they pull the most authoritative passage available and surface it as the answer. This means zero-volume long-tail queries matter.
 
 **How to execute:**
 - Identify esoteric, service-specific questions your clients actually ask in sales calls or support tickets — even if keyword tools show "0 searches/month"
-- Write a dedicated 500-token chunk answering each question with hard specifics
-- These chunks "train" AI models to associate your domain with that competency, making you the cited source when a user asks the same question inside a chat interface
+- Write a dedicated self-contained section answering each question with hard specifics
+- These sections "train" AI models to associate your domain with that competency, making you the cited source when a user asks the same question inside a chat interface
 
 **Rule:** At least 20% of a content calendar should target zero-volume long-tail queries that demonstrate deep operational expertise. Traffic is a lagging indicator; AI citation is the leading one.
 
@@ -515,10 +517,10 @@ Tier 2 assets are useful as additional corroboration but cannot substitute for t
 
 ### The Companion Content Rule
 
-Tributaries are not snippets, summaries, or "blog repurposing." Each tributary publishes a **distinct, substantive companion article** that is topically derived from the money page's 500-token chunk architecture but rewritten to fit the host platform's native format. A Medium article reads like a Medium article. A Google Sites page reads like a Google Sites page. A subreddit post reads like a Reddit thread.
+Tributaries are not snippets, summaries, or "blog repurposing." Each tributary publishes a **distinct, substantive companion article** that is topically derived from the money page's self-contained section architecture but rewritten to fit the host platform's native format. A Medium article reads like a Medium article. A Google Sites page reads like a Google Sites page. A subreddit post reads like a Reddit thread.
 
 Each companion must:
-1. Cover one or two specific 500-token QFO facets from the money page in greater depth than the money page does for that facet
+1. Cover one or two specific QFO facets from the money page in greater depth than the money page does for that facet
 2. Include the same canonical entity names, full official names, and key numbers as the money page (Entity Consensus)
 3. Pass the **Reddit Test, Information Gain Test, and `{{VERIFY}}` tagging requirements** identically to the money page (Section 5). Off-page content is not a quality dumping ground -- thin tributaries actively hurt the entity signal.
 4. Link back to the money page at least once with **descriptive, entity-rich anchor text** (never "click here", never the bare URL)
@@ -549,9 +551,9 @@ The "meaty enough to crawl" test: if Google's AI crawler hit this tributary on a
 
 ### Topical Derivation, Not Duplication
 
-Tributary content is **derived from** the money page's chunks but must not duplicate them. Duplicate or near-duplicate content across the network is a confirmed negative signal (Section 9). Use this derivation matrix:
+Tributary content is **derived from** the money page's sections but must not duplicate them. Duplicate or near-duplicate content across the network is a confirmed negative signal (Section 9). Use this derivation matrix:
 
-| Money page chunk | Tributary type | What the tributary covers |
+| Money page section | Tributary type | What the tributary covers |
 |---|---|---|
 | Pricing comparison table | Google Sheet (published) | The same data plus a calculation column, formula notes, methodology |
 | Operational detail (capacity, schedule) | Medium article | First-person observation, photos if available, expanded timeline |
@@ -590,7 +592,7 @@ Companion content for a target money page can be generated via:
 python3 "${SKILL_ROOT}/scripts/tributary_gen.py" "<keyword>" --money-page=<path-or-url> --tiers=1
 ```
 
-The tool reads the money page's chunk structure, derives 4-6 companion briefs (one per Tier 1 asset type), and outputs structured drafts to `~/Documents/SEO-AGI/tributaries/<slug>/`. Each draft inherits the same `{{VERIFY}}` tags and quality scorecard as the money page. The agent then refines each draft into platform-native voice before the human publishes.
+The tool reads the money page's section structure, derives 4-6 companion briefs (one per Tier 1 asset type), and outputs structured drafts to `~/Documents/SEO-AGI/tributaries/<slug>/`. Each draft inherits the same `{{VERIFY}}` tags and quality scorecard as the money page. The agent then refines each draft into platform-native voice before the human publishes.
 
 See Section 13 -- Execution Protocol for when to invoke this tool in the workflow.
 
@@ -665,7 +667,7 @@ When the user provides a target keyword and brief:
    ```
    Confirm with user before writing unless they said "just write it."
 
-3. **Write**: Front-load the fast-scan summary matrix in the first 200 words. Build 500-token QFO facet chunks using the Snippet Answer rule. Apply `EMQ_REQUIRED` flag from the forensic audit. Integrate the "Not For You" block.
+3. **Write**: Front-load the fast-scan summary matrix in the first 200 words. Build ~500-word self-contained sections covering each QFO facet, using the Snippet Answer rule (each section is a standalone answer to one question). Apply `EMQ_REQUIRED` flag from the forensic audit. Integrate the "Not For You" block.
 
 4. **FAQ Section**: Include a dedicated FAQ section answering at least 3 People Also Ask questions from research data. Each Q&A pair must be wrapped in FAQPage schema. This is NOT optional.
 
@@ -685,7 +687,7 @@ When the user provides a target keyword and brief:
     ```bash
     python3 "${SKILL_ROOT}/scripts/tributary_gen.py" "<keyword>" --money-page="<output_path>" --tiers=1
     ```
-    Output: 4-6 companion briefs derived from the money page's 500-token chunks (one per Tier 1 asset: Google Site, Medium, Subreddit, Google Sheet, LinkedIn). Each draft must be refined by the agent to host-platform voice and pass **every quality gate that applied to the money page** -- Reddit Test, Information Gain Test, Prove-It Details, all `{{VERIFY}}` / `{{SOURCE NEEDED}}` tags resolved, no banned patterns from Section 9, Entity Consensus validated. Off-page content is held to the same bar as on-page; a thin tributary actively suppresses the money page's entity signal. Output drafts are written to `~/Documents/SEO-AGI/tributaries/<slug>/` with a manifest mapping each draft to its target host platform and the money-page chunk it derives from. Tributary drafts must be reviewed and published (or scheduled) **before or same-day as the money page** -- see Tributary Trust Protocol -- Sequencing.
+    Output: 4-6 companion briefs derived from the money page's self-contained sections (one per Tier 1 asset: Google Site, Medium, Subreddit, Google Sheet, LinkedIn). Each draft must be refined by the agent to host-platform voice and pass **every quality gate that applied to the money page** -- Reddit Test, Information Gain Test, Prove-It Details, all `{{VERIFY}}` / `{{SOURCE NEEDED}}` tags resolved, no banned patterns from Section 9, Entity Consensus validated. Off-page content is held to the same bar as on-page; a thin tributary actively suppresses the money page's entity signal. Output drafts are written to `~/Documents/SEO-AGI/tributaries/<slug>/` with a manifest mapping each draft to its target host platform and the money-page section it derives from. Tributary drafts must be reviewed and published (or scheduled) **before or same-day as the money page** -- see Tributary Trust Protocol -- Sequencing.
 
 12. **Save**: Output to `~/Documents/SEO-AGI/pages/` (new pages) or `~/Documents/SEO-AGI/rewrites/` (rewrites). Tributary drafts save to `~/Documents/SEO-AGI/tributaries/<slug>/`.
 
@@ -728,7 +730,7 @@ Run before every delivery. If any answer is NO, revise before delivering.
 | 8 | All specific numbers tagged with `{{VERIFY}}`? | YES/NO |
 | 9 | All citations specific and traceable? | YES/NO |
 | 10 | "Not For You" block present? | YES/NO |
-| 11 | Content structured for LLM extraction (500-token chunks)? | YES/NO |
+| 11 | Each H2-bounded section is a self-contained answer (~250-500 words)? | YES/NO |
 | 12 | No banned phrases or patterns? | YES/NO |
 | 13 | Word count within competitive range? | YES/NO |
 | 14 | JSON-LD schema block included and matches page type? | YES/NO |
@@ -749,7 +751,7 @@ Run before every delivery. If any answer is NO, revise before delivering.
 | 27 | Map-to-informational internal link present (local pages only)? | YES/NO |
 | 28 | Every claim validated against 2+ high-ranking sources (Entity Consensus)? | YES/NO |
 | 29 | Geographic specificity present (neighborhoods, landmarks, not just city name)? | YES/NO |
-| 30 | Core answer deliverable in first 3 chunks (click satisfaction)? | YES/NO |
+| 30 | Core answer deliverable in first 3 sections (click satisfaction)? | YES/NO |
 | 31 | Interactive element or tool present (AI Overview theft defense)? | RECOMMENDED |
 | 32 | No banned 2026 content patterns present? | YES/NO |
 | 33 | Minimum 1,500 words of substantive content? | YES/NO |
@@ -757,7 +759,7 @@ Run before every delivery. If any answer is NO, revise before delivering.
 | 35 | QDD check run -- UGC in top 10 flagged or cleared? | YES/NO |
 | 36 | Site vs. Page audit run -- competitor type identified? | YES/NO |
 | 37 | Forensic EMQ ratio checked -- EMQ_REQUIRED flag applied correctly? | YES/NO |
-| 38 | Each 500-token chunk targets a distinct QFO facet (sub-query)? | YES/NO |
+| 38 | Each section targets a distinct QFO facet, with no facet doubled up? | YES/NO |
 | 39 | ICP defined in brief and content tailored to their pain points? | YES/NO |
 | 40 | Deep entity history / identity tags included where applicable? | YES/NO |
 | 41 | No keyword cannibalization with existing site URLs? | YES/NO |
@@ -799,7 +801,7 @@ These rules reflect confirmed ranking behavior changes observed across the SEO c
 Google now uses geographic click patterns (NavBoost + geolocation) to dramatically rerank results. A site can drop 4+ positions or disappear entirely based on geographic relevance. Every local/service page must include: full city and state, neighborhood names, nearby landmarks, transit references, terminal numbers where relevant. Not just "we serve [city]" but operationally specific location content that proves geographic relevance to the query's geo context.
 
 ### 2. Click Satisfaction as Primary Signal
-The March 2026 updates are click-based via NavBoost, not content-based. Google places pages to get clicks, then watches if users are satisfied. If click-through drops off, rankings drop. On-page requirement: content must deliver the answer in the first 3 chunks. Front-load all value. If users click and bounce, the page is done regardless of content quality.
+The March 2026 updates are click-based via NavBoost, not content-based. Google places pages to get clicks, then watches if users are satisfied. If click-through drops off, rankings drop. On-page requirement: content must deliver the answer in the first 3 sections. Front-load all value. If users click and bounce, the page is done regardless of content quality.
 
 ### 3. AI Overview Link Optimization
 Getting a link inside the AI Overview drives 70-80% CTR. Structure every page for AI Overview extraction: clean HTML tables with labeled columns, direct snippet answers in the first 2-3 sentences after every H2, FAQ markup via JSON-LD, and enough entity signals to earn the citation link not just be quoted without attribution.
@@ -880,7 +882,7 @@ If the user provides only a keyword, infer the rest and confirm before writing.
 
 Load on demand when writing (use Read tool with the skill root path):
 - `references/schema-patterns.md` -- JSON-LD templates by page type
-- `references/page-templates.md` -- structural templates (supplement, not override, the 500-token chunk architecture)
+- `references/page-templates.md` -- structural templates (supplement, not override, the self-contained section architecture)
 - `references/quality-checklist.md` -- detailed scoring rubric
 
 To read these, find the skill root first, then use the Read tool on `${SKILL_ROOT}/references/<filename>`.
